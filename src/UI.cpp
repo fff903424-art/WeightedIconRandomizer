@@ -3,110 +3,553 @@
 #include <Randomizer.hpp>
 
 #include <Geode/Geode.hpp>
-#include <Geode/loader/SettingV3.hpp>
 #include <Geode/ui/Popup.hpp>
-#include <Geode/ui/TextInput.hpp>
 #include <Geode/binding/ButtonSprite.hpp>
 #include <Geode/binding/CCMenuItemSpriteExtra.hpp>
-#include <Geode/binding/CCMenuItemToggler.hpp>
-#include <Geode/binding/FLAlertLayer.hpp>
-#include <Geode/binding/CCScrollLayerExt.hpp>
+#include <Geode/binding/CCTextInputNode.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace geode::prelude;
 
 namespace wir {
 
-static ButtonSprite* makeButton(char const* text, float scale = .55f) {
-    auto* sprite = ButtonSprite::create(text, "goldFont.fnt", "GJ_button_01.png", .8f);
-    sprite->setScale(scale);
-    return sprite;
-}
-
-class EditorPopup final : public Popup<> {
+class EditorPopup final : public Popup {
+protected:
     std::vector<CubeEntry> m_entries;
-    CCNode* m_content = nullptr;
+    int m_selected = 0;
+
+    CCMenu* m_menu = nullptr;
+
+    CCLabelBMFont* m_entryLabel = nullptr;
+    CCLabelBMFont* m_sourceLabel = nullptr;
+    CCLabelBMFont* m_enabledLabel = nullptr;
+    CCLabelBMFont* m_statusLabel = nullptr;
+
+    CCTextInputNode* m_idInput = nullptr;
+    CCTextInputNode* m_weightInput = nullptr;
+    CCTextInputNode* m_nameInput = nullptr;
 
     bool init() {
-        if (!Popup<>::init(480.f, 360.f)) return false;
-        setTitle("Weighted Cube Entries");
+        if (!Popup::init(520.f, 400.f))
+            return false;
+
+        setTitle("Weighted Cube Randomizer");
+
         m_entries = loadEntries();
-        rebuild();
+
+        if (m_entries.empty())
+            m_entries = defaultEntries();
+
+        m_menu = CCMenu::create();
+        m_menu->setPosition({0.f, 0.f});
+        m_mainLayer->addChild(m_menu);
+
+        buildUI();
+        refreshUI();
+
         return true;
     }
 
-    void rebuild() {
-        if (m_content) m_content->removeFromParent();
-        m_content = CCNode::create();
-        m_mainLayer->addChild(m_content);
+    void buildUI() {
+        auto size = m_mainLayer->getContentSize();
 
-        auto* info = CCLabelBMFont::create("Source  |  Cube/name  |  Weight  |  On  |  Remove", "goldFont.fnt");
-        info->setScale(.32f);
-        info->setPosition({240.f, 145.f});
-        m_content->addChild(info);
+        auto title = CCLabelBMFont::create(
+            "Cube Entry Editor",
+            "bigFont.fnt"
+        );
+        title->setScale(.55f);
+        title->setPosition({
+            size.width / 2.f,
+            size.height - 48.f
+        });
+        m_mainLayer->addChild(title);
 
-        float y = 116.f;
-        constexpr float rowHeight = 42.f;
+        m_entryLabel = CCLabelBMFont::create(
+            "",
+            "bigFont.fnt"
+        );
+        m_entryLabel->setScale(.42f);
+        m_entryLabel->setPosition({
+            size.width / 2.f,
+            size.height - 85.f
+        });
+        m_mainLayer->addChild(m_entryLabel);
 
-        for (size_t i = 0; i < m_entries.size(); ++i) {
-            if (y < -130.f) break;
-            auto const& e = m_entries[i];
-            auto* row = CCNode::create();
-            row->setPosition({0.f, y});
-            m_content->addChild(row);
+        m_sourceLabel = CCLabelBMFont::create(
+            "",
+            "bigFont.fnt"
+        );
+        m_sourceLabel->setScale(.38f);
+        m_sourceLabel->setAnchorPoint({0.f, .5f});
+        m_sourceLabel->setPosition({
+            45.f,
+            size.height - 125.f
+        });
+        m_mainLayer->addChild(m_sourceLabel);
 
-            auto* source = CCMenuItemSpriteExtra::create(
-                makeButton(e.source == IconSource::Vanilla ? "Vanilla" : "More", .42f),
-                this,
-                menu_selector(EditorPopup::onSource)
+        m_enabledLabel = CCLabelBMFont::create(
+            "",
+            "bigFont.fnt"
+        );
+        m_enabledLabel->setScale(.38f);
+        m_enabledLabel->setAnchorPoint({0.f, .5f});
+        m_enabledLabel->setPosition({
+            45.f,
+            size.height - 155.f
+        });
+        m_mainLayer->addChild(m_enabledLabel);
+
+        auto idText = CCLabelBMFont::create(
+            "Vanilla Cube ID:",
+            "bigFont.fnt"
+        );
+        idText->setScale(.34f);
+        idText->setAnchorPoint({0.f, .5f});
+        idText->setPosition({
+            45.f,
+            size.height - 195.f
+        });
+        m_mainLayer->addChild(idText);
+
+        m_idInput = CCTextInputNode::create(
+            145.f,
+            32.f,
+            "Cube ID",
+            "bigFont.fnt"
+        );
+        m_idInput->setScale(.65f);
+        m_idInput->setPosition({
+            145.f,
+            size.height - 195.f
+        });
+        m_mainLayer->addChild(m_idInput);
+
+        auto weightText = CCLabelBMFont::create(
+            "Weight:",
+            "bigFont.fnt"
+        );
+        weightText->setScale(.34f);
+        weightText->setAnchorPoint({0.f, .5f});
+        weightText->setPosition({
+            45.f,
+            size.height - 235.f
+        });
+        m_mainLayer->addChild(weightText);
+
+        m_weightInput = CCTextInputNode::create(
+            145.f,
+            32.f,
+            "Weight",
+            "bigFont.fnt"
+        );
+        m_weightInput->setScale(.65f);
+        m_weightInput->setPosition({
+            145.f,
+            size.height - 235.f
+        });
+        m_mainLayer->addChild(m_weightInput);
+
+        auto nameText = CCLabelBMFont::create(
+            "More Icons name:",
+            "bigFont.fnt"
+        );
+        nameText->setScale(.34f);
+        nameText->setAnchorPoint({0.f, .5f});
+        nameText->setPosition({
+            45.f,
+            size.height - 275.f
+        });
+        m_mainLayer->addChild(nameText);
+
+        m_nameInput = CCTextInputNode::create(
+            240.f,
+            32.f,
+            "Custom icon name",
+            "bigFont.fnt"
+        );
+        m_nameInput->setScale(.65f);
+        m_nameInput->setPosition({
+            185.f,
+            size.height - 275.f
+        });
+        m_mainLayer->addChild(m_nameInput);
+
+        m_statusLabel = CCLabelBMFont::create(
+            "",
+            "bigFont.fnt"
+        );
+        m_statusLabel->setScale(.30f);
+        m_statusLabel->setPosition({
+            size.width / 2.f,
+            55.f
+        });
+        m_mainLayer->addChild(m_statusLabel);
+
+        createButton(
+            "Prev",
+            {70.f, 105.f},
+            menu_selector(EditorPopup::onPrevious)
+        );
+
+        createButton(
+            "Next",
+            {145.f, 105.f},
+            menu_selector(EditorPopup::onNext)
+        );
+
+        createButton(
+            "Add",
+            {220.f, 105.f},
+            menu_selector(EditorPopup::onAdd)
+        );
+
+        createButton(
+            "Remove",
+            {300.f, 105.f},
+            menu_selector(EditorPopup::onRemove)
+        );
+
+        createButton(
+            "Source",
+            {385.f, 105.f},
+            menu_selector(EditorPopup::onSource)
+        );
+
+        createButton(
+            "Enabled",
+            {460.f, 105.f},
+            menu_selector(EditorPopup::onEnabled)
+        );
+
+        createButton(
+            "Save",
+            {120.f, 25.f},
+            menu_selector(EditorPopup::onSave)
+        );
+
+        createButton(
+            "Test",
+            {205.f, 25.f},
+            menu_selector(EditorPopup::onTest)
+        );
+
+        createButton(
+            "Reset",
+            {290.f, 25.f},
+            menu_selector(EditorPopup::onReset)
+        );
+    }
+
+    void createButton(
+        char const* text,
+        CCPoint position,
+        SEL_MenuHandler callback
+    ) {
+        auto sprite = ButtonSprite::create(text);
+
+        if (!sprite)
+            return;
+
+        sprite->setScale(.55f);
+
+        auto button = CCMenuItemSpriteExtra::create(
+            sprite,
+            this,
+            callback
+        );
+
+        if (!button)
+            return;
+
+        button->setPosition(position);
+        m_menu->addChild(button);
+    }
+
+    void refreshUI() {
+        if (m_entries.empty()) {
+            m_selected = 0;
+
+            if (m_entryLabel)
+                m_entryLabel->setString("No entries");
+
+            if (m_sourceLabel)
+                m_sourceLabel->setString("Add an entry.");
+
+            if (m_enabledLabel)
+                m_enabledLabel->setString("");
+
+            if (m_idInput)
+                m_idInput->setString("");
+
+            if (m_weightInput)
+                m_weightInput->setString("");
+
+            if (m_nameInput)
+                m_nameInput->setString("");
+
+            return;
+        }
+
+        if (m_selected < 0)
+            m_selected = 0;
+
+        if (m_selected >= static_cast<int>(m_entries.size()))
+            m_selected = static_cast<int>(m_entries.size()) - 1;
+
+        auto const& entry = m_entries[m_selected];
+
+        auto entryText = fmt::format(
+            "Entry {}/{}",
+            m_selected + 1,
+            m_entries.size()
+        );
+
+        m_entryLabel->setString(entryText.c_str());
+
+        auto sourceText =
+            entry.source == IconSource::Vanilla
+                ? fmt::format("Source: Vanilla")
+                : fmt::format("Source: More Icons");
+
+        m_sourceLabel->setString(sourceText.c_str());
+
+        auto enabledText = fmt::format(
+            "Enabled: {}",
+            entry.enabled ? "YES" : "NO"
+        );
+
+        m_enabledLabel->setString(enabledText.c_str());
+
+        m_idInput->setString(
+            std::to_string(std::max(1, entry.vanillaID))
+        );
+
+        std::ostringstream weight;
+        weight << std::fixed << std::setprecision(3)
+               << entry.weight;
+
+        m_weightInput->setString(weight.str());
+
+        m_nameInput->setString(entry.moreIconsName);
+
+        updateStatus();
+    }
+
+    void updateStatus() {
+        if (!m_statusLabel)
+            return;
+
+        if (m_entries.empty()) {
+            m_statusLabel->setString("No entries");
+            return;
+        }
+
+        auto const& entry = m_entries[m_selected];
+
+        std::string text;
+
+        if (entry.source == IconSource::Vanilla) {
+            text = fmt::format(
+                "Vanilla Cube {} | Weight {:.3f}",
+                entry.vanillaID,
+                entry.weight
             );
-            source->setTag(static_cast<int>(i));
-            source->setPosition({70.f, 0.f});
-            row->addChild(source);
-
-            auto* input = TextInput::create(175.f, e.source == IconSource::Vanilla ? "Cube ID" : "More Icons name", "bigFont.fnt");
-            input->setScale(.44f);
-            input->setPosition({200.f, 0.f});
-            input->setTag(static_cast<int>(i));
-            input->setString(e.source == IconSource::Vanilla ? fmt::format("{}", e.vanillaID) : e.moreIconsName, false);
-            input->setCallback([this, i](std::string const& text) {
-                if (i >= m_entries.size()) return;
-                if (m_entries[i].source == IconSource::Vanilla) {
-                    try { m_entries[i].vanillaID = std::max(1, std::stoi(text)); }
-                    catch (...) {}
-                } else {
-                    m_entries[i].moreIconsName = text;
-                }
-                saveEntries(m_entries);
-            });
-            row->addChild(input);
-
-            auto* weight = TextInput::create(70.f, "Weight", "bigFont.fnt");
-            weight->setScale(.44f);
-            weight->setPosition({305.f, 0.f});
-            weight->setCommonFilter(CommonFilter::Float);
-            weight->setString(fmt::format("{}", e.weight), false);
-            weight->setCallback([this, i](std::string const& text) {
-                if (i >= m_entries.size()) return;
-                try {
-                    double value = std::stod(text);
-                    if (std::isfinite(value) && value >= 0.0) m_entries[i].weight = value;
-                } catch (...) {}
-                saveEntries(m_entries);
-            });
-            row->addChild(weight);
-
-            auto* toggle = CCMenuItemToggler::createWithStandardSprites(
-                this, menu_selector(EditorPopup::onToggle), .55f
+        }
+        else {
+            text = fmt::format(
+                "More Icons '{}' | Weight {:.3f}",
+                entry.moreIconsName,
+                entry.weight
             );
-            toggle->setTag(static_cast<int>(i));
-            toggle->toggle(!e.enabled);
-            toggle->setPosition({365.f, 0.f});
-            row->addChild(toggle);
+        }
 
-            auto* remove = CCMenuItemSpriteExtra::create(
+        m_statusLabel->setString(text.c_str());
+    }
+
+    void commitCurrent() {
+        if (m_entries.empty())
+            return;
+
+        auto& entry = m_entries[m_selected];
+
+        try {
+            auto id = std::stoi(m_idInput->getString());
+
+            if (id > 0)
+                entry.vanillaID = id;
+        }
+        catch (...) {
+        }
+
+        try {
+            auto weight = std::stod(m_weightInput->getString());
+
+            if (std::isfinite(weight) && weight >= 0.0)
+                entry.weight = weight;
+        }
+        catch (...) {
+        }
+
+        entry.moreIconsName = m_nameInput->getString();
+
+        saveEntries(m_entries);
+    }
+
+    void onPrevious(CCObject*) {
+        commitCurrent();
+
+        if (m_entries.empty())
+            return;
+
+        --m_selected;
+
+        if (m_selected < 0)
+            m_selected = static_cast<int>(m_entries.size()) - 1;
+
+        refreshUI();
+    }
+
+    void onNext(CCObject*) {
+        commitCurrent();
+
+        if (m_entries.empty())
+            return;
+
+        ++m_selected;
+
+        if (m_selected >= static_cast<int>(m_entries.size()))
+            m_selected = 0;
+
+        refreshUI();
+    }
+
+    void onAdd(CCObject*) {
+        commitCurrent();
+
+        CubeEntry entry;
+        entry.source = IconSource::Vanilla;
+        entry.vanillaID = 1;
+        entry.moreIconsName = "";
+        entry.weight = 1.0;
+        entry.enabled = true;
+
+        m_entries.push_back(entry);
+        m_selected = static_cast<int>(m_entries.size()) - 1;
+
+        saveEntries(m_entries);
+        refreshUI();
+    }
+
+    void onRemove(CCObject*) {
+        if (m_entries.empty())
+            return;
+
+        m_entries.erase(m_entries.begin() + m_selected);
+
+        if (m_selected >= static_cast<int>(m_entries.size()))
+            m_selected = static_cast<int>(m_entries.size()) - 1;
+
+        if (m_selected < 0)
+            m_selected = 0;
+
+        saveEntries(m_entries);
+        refreshUI();
+    }
+
+    void onSource(CCObject*) {
+        if (m_entries.empty())
+            return;
+
+        commitCurrent();
+
+        auto& entry = m_entries[m_selected];
+
+        if (entry.source == IconSource::Vanilla) {
+            entry.source = IconSource::MoreIcons;
+
+            if (entry.moreIconsName.empty())
+                entry.moreIconsName = "my_custom_icon";
+        }
+        else {
+            entry.source = IconSource::Vanilla;
+        }
+
+        saveEntries(m_entries);
+        refreshUI();
+    }
+
+    void onEnabled(CCObject*) {
+        if (m_entries.empty())
+            return;
+
+        commitCurrent();
+
+        m_entries[m_selected].enabled =
+            !m_entries[m_selected].enabled;
+
+        saveEntries(m_entries);
+        refreshUI();
+    }
+
+    void onSave(CCObject*) {
+        commitCurrent();
+        updateStatus();
+
+        m_statusLabel->setString("Saved!");
+    }
+
+    void onTest(CCObject*) {
+        commitCurrent();
+
+        randomizeCube();
+
+        m_statusLabel->setString(
+            "Randomized cube!"
+        );
+    }
+
+    void onReset(CCObject*) {
+        m_entries = defaultEntries();
+        m_selected = 0;
+
+        saveEntries(m_entries);
+        refreshUI();
+
+        m_statusLabel->setString(
+            "Entries reset."
+        );
+    }
+
+public:
+    static EditorPopup* create() {
+        auto ret = new EditorPopup();
+
+        if (ret->init()) {
+            ret->autorelease();
+            return ret;
+        }
+
+        delete ret;
+        return nullptr;
+    }
+};
+
+void openEditor() {
+    auto popup = EditorPopup::create();
+
+    if (!popup)
+        return;
+
+    popup->show();
+}
+
+} // namespace wir            auto* remove = CCMenuItemSpriteExtra::create(
                 makeButton("X", .42f), this, menu_selector(EditorPopup::onRemove)
             );
             remove->setTag(static_cast<int>(i));
