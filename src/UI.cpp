@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -47,6 +48,10 @@ protected:
             m_entries = defaultEntries();
 
         m_menu = CCMenu::create();
+
+        if (!m_menu)
+            return false;
+
         m_menu->setPosition({0.f, 0.f});
         m_mainLayer->addChild(m_menu);
 
@@ -63,59 +68,74 @@ protected:
             "Cube Entry Editor",
             "bigFont.fnt"
         );
-        title->setScale(.55f);
-        title->setPosition({
-            size.width / 2.f,
-            size.height - 48.f
-        });
-        m_mainLayer->addChild(title);
+
+        if (title) {
+            title->setScale(.55f);
+            title->setPosition({
+                size.width / 2.f,
+                size.height - 48.f
+            });
+            m_mainLayer->addChild(title);
+        }
 
         m_entryLabel = CCLabelBMFont::create(
             "",
             "bigFont.fnt"
         );
-        m_entryLabel->setScale(.42f);
-        m_entryLabel->setPosition({
-            size.width / 2.f,
-            size.height - 85.f
-        });
-        m_mainLayer->addChild(m_entryLabel);
+
+        if (m_entryLabel) {
+            m_entryLabel->setScale(.42f);
+            m_entryLabel->setPosition({
+                size.width / 2.f,
+                size.height - 85.f
+            });
+            m_mainLayer->addChild(m_entryLabel);
+        }
 
         m_sourceLabel = CCLabelBMFont::create(
             "",
             "bigFont.fnt"
         );
-        m_sourceLabel->setScale(.38f);
-        m_sourceLabel->setAnchorPoint({0.f, .5f});
-        m_sourceLabel->setPosition({
-            45.f,
-            size.height - 125.f
-        });
-        m_mainLayer->addChild(m_sourceLabel);
+
+        if (m_sourceLabel) {
+            m_sourceLabel->setScale(.38f);
+            m_sourceLabel->setAnchorPoint({0.f, .5f});
+            m_sourceLabel->setPosition({
+                45.f,
+                size.height - 125.f
+            });
+            m_mainLayer->addChild(m_sourceLabel);
+        }
 
         m_enabledLabel = CCLabelBMFont::create(
             "",
             "bigFont.fnt"
         );
-        m_enabledLabel->setScale(.38f);
-        m_enabledLabel->setAnchorPoint({0.f, .5f});
-        m_enabledLabel->setPosition({
-            45.f,
-            size.height - 155.f
-        });
-        m_mainLayer->addChild(m_enabledLabel);
+
+        if (m_enabledLabel) {
+            m_enabledLabel->setScale(.38f);
+            m_enabledLabel->setAnchorPoint({0.f, .5f});
+            m_enabledLabel->setPosition({
+                45.f,
+                size.height - 155.f
+            });
+            m_mainLayer->addChild(m_enabledLabel);
+        }
 
         auto idText = CCLabelBMFont::create(
             "Vanilla Cube ID:",
             "bigFont.fnt"
         );
-        idText->setScale(.34f);
-        idText->setAnchorPoint({0.f, .5f});
-        idText->setPosition({
-            45.f,
-            size.height - 195.f
-        });
-        m_mainLayer->addChild(idText);
+
+        if (idText) {
+            idText->setScale(.34f);
+            idText->setAnchorPoint({0.f, .5f});
+            idText->setPosition({
+                45.f,
+                size.height - 195.f
+            });
+            m_mainLayer->addChild(idText);
+        }
 
         m_idInput = CCTextInputNode::create(
             145.f,
@@ -123,24 +143,30 @@ protected:
             "Cube ID",
             "bigFont.fnt"
         );
-        m_idInput->setScale(.65f);
-        m_idInput->setPosition({
-            145.f,
-            size.height - 195.f
-        });
-        m_mainLayer->addChild(m_idInput);
+
+        if (m_idInput) {
+            m_idInput->setScale(.65f);
+            m_idInput->setPosition({
+                145.f,
+                size.height - 195.f
+            });
+            m_mainLayer->addChild(m_idInput);
+        }
 
         auto weightText = CCLabelBMFont::create(
             "Weight:",
             "bigFont.fnt"
         );
-        weightText->setScale(.34f);
-        weightText->setAnchorPoint({0.f, .5f});
-        weightText->setPosition({
-            45.f,
-            size.height - 235.f
-        });
-        m_mainLayer->addChild(weightText);
+
+        if (weightText) {
+            weightText->setScale(.34f);
+            weightText->setAnchorPoint({0.f, .5f});
+            weightText->setPosition({
+                45.f,
+                size.height - 235.f
+            });
+            m_mainLayer->addChild(weightText);
+        }
 
         m_weightInput = CCTextInputNode::create(
             145.f,
@@ -148,24 +174,30 @@ protected:
             "Weight",
             "bigFont.fnt"
         );
-        m_weightInput->setScale(.65f);
-        m_weightInput->setPosition({
-            145.f,
-            size.height - 235.f
-        });
-        m_mainLayer->addChild(m_weightInput);
+
+        if (m_weightInput) {
+            m_weightInput->setScale(.65f);
+            m_weightInput->setPosition({
+                145.f,
+                size.height - 235.f
+            });
+            m_mainLayer->addChild(m_weightInput);
+        }
 
         auto nameText = CCLabelBMFont::create(
             "More Icons name:",
             "bigFont.fnt"
         );
-        nameText->setScale(.34f);
-        nameText->setAnchorPoint({0.f, .5f});
-        nameText->setPosition({
-            45.f,
-            size.height - 275.f
-        });
-        m_mainLayer->addChild(nameText);
+
+        if (nameText) {
+            nameText->setScale(.34f);
+            nameText->setAnchorPoint({0.f, .5f});
+            nameText->setPosition({
+                45.f,
+                size.height - 275.f
+            });
+            m_mainLayer->addChild(nameText);
+        }
 
         m_nameInput = CCTextInputNode::create(
             240.f,
@@ -173,23 +205,29 @@ protected:
             "Custom icon name",
             "bigFont.fnt"
         );
-        m_nameInput->setScale(.65f);
-        m_nameInput->setPosition({
-            185.f,
-            size.height - 275.f
-        });
-        m_mainLayer->addChild(m_nameInput);
+
+        if (m_nameInput) {
+            m_nameInput->setScale(.65f);
+            m_nameInput->setPosition({
+                185.f,
+                size.height - 275.f
+            });
+            m_mainLayer->addChild(m_nameInput);
+        }
 
         m_statusLabel = CCLabelBMFont::create(
             "",
             "bigFont.fnt"
         );
-        m_statusLabel->setScale(.30f);
-        m_statusLabel->setPosition({
-            size.width / 2.f,
-            55.f
-        });
-        m_mainLayer->addChild(m_statusLabel);
+
+        if (m_statusLabel) {
+            m_statusLabel->setScale(.30f);
+            m_statusLabel->setPosition({
+                size.width / 2.f,
+                55.f
+            });
+            m_mainLayer->addChild(m_statusLabel);
+        }
 
         createButton(
             "Prev",
@@ -293,6 +331,7 @@ protected:
             if (m_nameInput)
                 m_nameInput->setString("");
 
+            updateStatus();
             return;
         }
 
@@ -304,39 +343,54 @@ protected:
 
         auto const& entry = m_entries[m_selected];
 
-        auto entryText = fmt::format(
-            "Entry {}/{}",
-            m_selected + 1,
-            m_entries.size()
-        );
+        if (m_entryLabel) {
+            auto entryText = fmt::format(
+                "Entry {}/{}",
+                m_selected + 1,
+                m_entries.size()
+            );
 
-        m_entryLabel->setString(entryText.c_str());
+            m_entryLabel->setString(entryText.c_str());
+        }
 
-        auto sourceText =
-            entry.source == IconSource::Vanilla
-                ? fmt::format("Source: Vanilla")
-                : fmt::format("Source: More Icons");
+        if (m_sourceLabel) {
+            char const* source =
+                entry.source == IconSource::Vanilla
+                    ? "Source: Vanilla"
+                    : "Source: More Icons";
 
-        m_sourceLabel->setString(sourceText.c_str());
+            m_sourceLabel->setString(source);
+        }
 
-        auto enabledText = fmt::format(
-            "Enabled: {}",
-            entry.enabled ? "YES" : "NO"
-        );
+        if (m_enabledLabel) {
+            auto enabledText = fmt::format(
+                "Enabled: {}",
+                entry.enabled ? "YES" : "NO"
+            );
 
-        m_enabledLabel->setString(enabledText.c_str());
+            m_enabledLabel->setString(enabledText.c_str());
+        }
 
-        m_idInput->setString(
-            std::to_string(std::max(1, entry.vanillaID))
-        );
+        if (m_idInput) {
+            m_idInput->setString(
+                std::to_string(
+                    std::max(1, entry.vanillaID)
+                )
+            );
+        }
 
-        std::ostringstream weight;
-        weight << std::fixed << std::setprecision(3)
-               << entry.weight;
+        if (m_weightInput) {
+            std::ostringstream weight;
 
-        m_weightInput->setString(weight.str());
+            weight << std::fixed
+                   << std::setprecision(3)
+                   << entry.weight;
 
-        m_nameInput->setString(entry.moreIconsName);
+            m_weightInput->setString(weight.str());
+        }
+
+        if (m_nameInput)
+            m_nameInput->setString(entry.moreIconsName);
 
         updateStatus();
     }
@@ -376,27 +430,37 @@ protected:
         if (m_entries.empty())
             return;
 
+        if (m_selected < 0 ||
+            m_selected >= static_cast<int>(m_entries.size()))
+            return;
+
         auto& entry = m_entries[m_selected];
 
-        try {
-            auto id = std::stoi(m_idInput->getString());
+        if (m_idInput) {
+            try {
+                auto id = std::stoi(m_idInput->getString());
 
-            if (id > 0)
-                entry.vanillaID = id;
-        }
-        catch (...) {
-        }
-
-        try {
-            auto weight = std::stod(m_weightInput->getString());
-
-            if (std::isfinite(weight) && weight >= 0.0)
-                entry.weight = weight;
-        }
-        catch (...) {
+                if (id > 0)
+                    entry.vanillaID = id;
+            }
+            catch (...) {
+            }
         }
 
-        entry.moreIconsName = m_nameInput->getString();
+        if (m_weightInput) {
+            try {
+                auto weight =
+                    std::stod(m_weightInput->getString());
+
+                if (std::isfinite(weight) && weight >= 0.0)
+                    entry.weight = weight;
+            }
+            catch (...) {
+            }
+        }
+
+        if (m_nameInput)
+            entry.moreIconsName = m_nameInput->getString();
 
         saveEntries(m_entries);
     }
@@ -410,7 +474,8 @@ protected:
         --m_selected;
 
         if (m_selected < 0)
-            m_selected = static_cast<int>(m_entries.size()) - 1;
+            m_selected =
+                static_cast<int>(m_entries.size()) - 1;
 
         refreshUI();
     }
@@ -440,7 +505,9 @@ protected:
         entry.enabled = true;
 
         m_entries.push_back(entry);
-        m_selected = static_cast<int>(m_entries.size()) - 1;
+
+        m_selected =
+            static_cast<int>(m_entries.size()) - 1;
 
         saveEntries(m_entries);
         refreshUI();
@@ -450,10 +517,17 @@ protected:
         if (m_entries.empty())
             return;
 
-        m_entries.erase(m_entries.begin() + m_selected);
+        if (m_selected < 0 ||
+            m_selected >= static_cast<int>(m_entries.size()))
+            return;
+
+        m_entries.erase(
+            m_entries.begin() + m_selected
+        );
 
         if (m_selected >= static_cast<int>(m_entries.size()))
-            m_selected = static_cast<int>(m_entries.size()) - 1;
+            m_selected =
+                static_cast<int>(m_entries.size()) - 1;
 
         if (m_selected < 0)
             m_selected = 0;
@@ -501,7 +575,8 @@ protected:
         commitCurrent();
         updateStatus();
 
-        m_statusLabel->setString("Saved!");
+        if (m_statusLabel)
+            m_statusLabel->setString("Saved!");
     }
 
     void onTest(CCObject*) {
@@ -509,9 +584,10 @@ protected:
 
         randomizeCube();
 
-        m_statusLabel->setString(
-            "Randomized cube!"
-        );
+        if (m_statusLabel)
+            m_statusLabel->setString(
+                "Randomized cube!"
+            );
     }
 
     void onReset(CCObject*) {
@@ -521,9 +597,10 @@ protected:
         saveEntries(m_entries);
         refreshUI();
 
-        m_statusLabel->setString(
-            "Entries reset."
-        );
+        if (m_statusLabel)
+            m_statusLabel->setString(
+                "Entries reset."
+            );
     }
 
 public:
@@ -549,98 +626,18 @@ void openEditor() {
     popup->show();
 }
 
-} // namespace wir            auto* remove = CCMenuItemSpriteExtra::create(
-                makeButton("X", .42f), this, menu_selector(EditorPopup::onRemove)
-            );
-            remove->setTag(static_cast<int>(i));
-            remove->setPosition({415.f, 0.f});
-            row->addChild(remove);
-
-            y -= rowHeight;
-        }
-
-        auto* add = CCMenuItemSpriteExtra::create(
-            makeButton("Add", .5f), this, menu_selector(EditorPopup::onAdd)
-        );
-        add->setPosition({110.f, -157.f});
-        m_content->addChild(add);
-
-        auto* reset = CCMenuItemSpriteExtra::create(
-            makeButton("Reset", .5f), this, menu_selector(EditorPopup::onReset)
-        );
-        reset->setPosition({240.f, -157.f});
-        m_content->addChild(reset);
-
-        auto* close = CCMenuItemSpriteExtra::create(
-            makeButton("Close", .5f), this, menu_selector(EditorPopup::onClosePopup)
-        );
-        close->setPosition({370.f, -157.f});
-        m_content->addChild(close);
-    }
-
-    void onAdd(CCObject*) {
-        m_entries.push_back(CubeEntry{});
-        saveEntries(m_entries);
-        rebuild();
-    }
-
-    void onRemove(CCObject* sender) {
-        auto index = static_cast<size_t>(sender->getTag());
-        if (index >= m_entries.size()) return;
-        m_entries.erase(m_entries.begin() + static_cast<ptrdiff_t>(index));
-        saveEntries(m_entries);
-        rebuild();
-    }
-
-    void onSource(CCObject* sender) {
-        auto index = static_cast<size_t>(sender->getTag());
-        if (index >= m_entries.size()) return;
-        auto& entry = m_entries[index];
-        entry.source = entry.source == IconSource::Vanilla ? IconSource::MoreIcons : IconSource::Vanilla;
-        saveEntries(m_entries);
-        rebuild();
-    }
-
-    void onToggle(CCObject* sender) {
-        auto index = static_cast<size_t>(sender->getTag());
-        if (index >= m_entries.size()) return;
-        m_entries[index].enabled = !m_entries[index].enabled;
-        saveEntries(m_entries);
-    }
-
-    void onReset(CCObject*) {
-        resetEntries();
-        m_entries = loadEntries();
-        rebuild();
-    }
-
-    void onClosePopup(CCObject*) {
-        this->removeFromParentAndCleanup(true);
-    }
-
-public:
-    static EditorPopup* create() {
-        auto* ret = new EditorPopup();
-        if (ret->init()) {
-            ret->autorelease();
-            return ret;
-        }
-        delete ret;
-        return nullptr;
-    }
-};
-
-void openEditor() {
-    if (auto* popup = EditorPopup::create()) popup->show();
-}
-
 void testRandomize() {
     randomizeCube();
 }
 
 void resetFromUI() {
     resetEntries();
-    FLAlertLayer::create("Weighted Icon Randomizer", "Configuration reset to the default example.", "OK")->show();
+
+    FLAlertLayer::create(
+        "Weighted Icon Randomizer",
+        "Configuration reset to the default example.",
+        "OK"
+    )->show();
 }
 
 class ButtonSettingV3 final : public SettingV3 {
@@ -653,17 +650,42 @@ public:
         matjson::Value const& json
     ) {
         auto ret = std::make_shared<ButtonSettingV3>();
-        auto root = checkJson(json, "Weighted Icon Randomizer button setting");
-        GEODE_UNWRAP(ret->parseBaseProperties(key, modID, json));
+
+        auto root = checkJson(
+            json,
+            "Weighted Icon Randomizer button setting"
+        );
+
+        GEODE_UNWRAP(
+            ret->parseBaseProperties(
+                key,
+                modID,
+                json
+            )
+        );
+
         root.has("action").into(ret->action);
         root.checkUnknownKeys();
-        return root.ok(std::static_pointer_cast<SettingV3>(ret));
+
+        return root.ok(
+            std::static_pointer_cast<SettingV3>(ret)
+        );
     }
 
     SettingNodeV3* createNode(float width) override;
-    bool load(matjson::Value const&) override { return true; }
-    bool save(matjson::Value&) const override { return true; }
-    bool isDefaultValue() const override { return true; }
+
+    bool load(matjson::Value const&) override {
+        return true;
+    }
+
+    bool save(matjson::Value&) const override {
+        return true;
+    }
+
+    bool isDefaultValue() const override {
+        return true;
+    }
+
     void reset() override {}
 };
 
@@ -671,61 +693,118 @@ class ButtonSettingNodeV3 final : public SettingNodeV3 {
     ButtonSprite* m_sprite = nullptr;
     CCMenuItemSpriteExtra* m_button = nullptr;
 
-    bool init(std::shared_ptr<ButtonSettingV3> setting, float width) {
-        if (!SettingNodeV3::init(setting, width)) return false;
+    bool init(
+        std::shared_ptr<ButtonSettingV3> setting,
+        float width
+    ) {
+        if (!SettingNodeV3::init(setting, width))
+            return false;
 
         char const* text = "Open";
-        if (setting->action == "test") text = "Randomize";
-        else if (setting->action == "reset") text = "Reset";
-        else if (setting->action == "editor") text = "Configure";
 
-        m_sprite = makeButton(text, .55f);
-        m_button = CCMenuItemSpriteExtra::create(m_sprite, this, menu_selector(ButtonSettingNodeV3::onClick));
-        getButtonMenu()->addChildAtPosition(m_button, Anchor::Center);
+        if (setting->action == "test")
+            text = "Randomize";
+        else if (setting->action == "reset")
+            text = "Reset";
+        else if (setting->action == "editor")
+            text = "Configure";
+
+        m_sprite = ButtonSprite::create(text);
+
+        if (!m_sprite)
+            return false;
+
+        m_sprite->setScale(.55f);
+
+        m_button = CCMenuItemSpriteExtra::create(
+            m_sprite,
+            this,
+            menu_selector(ButtonSettingNodeV3::onClick)
+        );
+
+        if (!m_button)
+            return false;
+
+        getButtonMenu()->addChildAtPosition(
+            m_button,
+            Anchor::Center
+        );
+
         getButtonMenu()->setContentWidth(105.f);
         getButtonMenu()->updateLayout();
+
         updateState(nullptr);
+
         return true;
     }
 
     void onClick(CCObject*) {
         auto setting = getSetting();
-        if (setting->action == "editor") openEditor();
-        else if (setting->action == "test") testRandomize();
-        else if (setting->action == "reset") resetFromUI();
+
+        if (setting->action == "editor")
+            openEditor();
+        else if (setting->action == "test")
+            testRandomize();
+        else if (setting->action == "reset")
+            resetFromUI();
     }
 
 public:
-    static ButtonSettingNodeV3* create(std::shared_ptr<ButtonSettingV3> setting, float width) {
-        auto* ret = new ButtonSettingNodeV3();
+    static ButtonSettingNodeV3* create(
+        std::shared_ptr<ButtonSettingV3> setting,
+        float width
+    ) {
+        auto ret = new ButtonSettingNodeV3();
+
         if (ret->init(std::move(setting), width)) {
             ret->autorelease();
             return ret;
         }
+
         delete ret;
         return nullptr;
     }
 
     void onCommit() override {}
+
     void onResetToDefault() override {}
-    bool hasUncommittedChanges() const override { return false; }
-    bool hasNonDefaultValue() const override { return false; }
+
+    bool hasUncommittedChanges() const override {
+        return false;
+    }
+
+    bool hasNonDefaultValue() const override {
+        return false;
+    }
 
     std::shared_ptr<ButtonSettingV3> getSetting() const {
-        return std::static_pointer_cast<ButtonSettingV3>(SettingNodeV3::getSetting());
+        return std::static_pointer_cast<ButtonSettingV3>(
+            SettingNodeV3::getSetting()
+        );
     }
 };
 
 SettingNodeV3* ButtonSettingV3::createNode(float width) {
     return ButtonSettingNodeV3::create(
-        std::static_pointer_cast<ButtonSettingV3>(shared_from_this()), width
+        std::static_pointer_cast<ButtonSettingV3>(
+            shared_from_this()
+        ),
+        width
     );
 }
 
 void registerSettings() {
-    auto result = Mod::get()->registerCustomSettingType("wir-button", &ButtonSettingV3::parse);
+    auto result =
+        Mod::get()->registerCustomSettingType(
+            "wir-button",
+            &ButtonSettingV3::parse
+        );
+
     if (result.isErr()) {
-        log::error("Failed to register custom setting type: {}", result.unwrapErr());
+        log::error(
+            "Failed to register custom setting type: {}",
+            result.unwrapErr()
+        );
     }
 }
 
