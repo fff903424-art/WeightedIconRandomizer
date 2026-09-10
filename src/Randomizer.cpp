@@ -1,7 +1,7 @@
 #define MORE_ICONS_EVENTS
 #include <hiimjustin000.more_icons/include/MoreIcons.hpp>
 
-#include "../include/Randomizer.hpp"
+#include <Randomizer.hpp>
 
 #include <Geode/Geode.hpp>
 #include <Geode/binding/GameManager.hpp>
