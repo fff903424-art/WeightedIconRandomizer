@@ -17,22 +17,29 @@ jobs:
 
       - name: Install Geode CLI
         run: |
-          curl -L https://github.com/geode-sdk/cli/releases/latest/download/geode-linux-x86_64 -o geode
-          chmod +x geode
-          sudo mv geode /usr/local/bin/geode
+          curl -fsSL https://raw.githubusercontent.com/geode-sdk/cli/main/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Install Geode SDK 5.10.1
+      - name: Check Geode CLI
         run: |
-          geode sdk install 5.10.1
+          geode --version
+
+      - name: Install Geode SDK
+        run: |
+          geode sdk install
           geode sdk install-binaries
 
-      - name: Build mod
+      - name: Build .geode mod
         run: |
           geode build
 
-      - name: Upload Geode mod
+      - name: Find generated .geode
+        run: |
+          find . -type f -name "*.geode" -print
+
+      - name: Upload .geode mod
         uses: actions/upload-artifact@v4
         with:
-          name: Weighted-Icon-Randomizer
-          path: build/*.geode
+          name: Weighted-Icon-Randomizer-geode
+          path: "**/*.geode"
           if-no-files-found: error
