@@ -1,4 +1,4 @@
-#include "../include/Config.hpp"
+#include <Config.hpp>
 
 #include <Geode/Geode.hpp>
 #include <cmath>
