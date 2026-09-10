@@ -339,7 +339,8 @@ protected:
             m_selected = 0;
 
         if (m_selected >= static_cast<int>(m_entries.size()))
-            m_selected = static_cast<int>(m_entries.size()) - 1;
+            m_selected =
+                static_cast<int>(m_entries.size()) - 1;
 
         auto const& entry = m_entries[m_selected];
 
@@ -806,6 +807,10 @@ void registerSettings() {
             result.unwrapErr()
         );
     }
+}
+
+$on_mod(Loaded) {
+    registerSettings();
 }
 
 } // namespace wir
