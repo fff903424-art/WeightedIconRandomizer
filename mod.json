@@ -1,0 +1,53 @@
+{
+  "geode": "v5.10.1",
+  "gd": {
+    "win": "2.2081",
+    "android": "2.2081",
+    "mac": "2.2081",
+    "ios": "2.2081"
+  },
+  "id": "eheh.weighted-icon-randomizer",
+  "name": "Weighted Icon Randomizer",
+  "version": "v2.0.0",
+  "developer": "Eheh",
+  "description": "Randomizes only the player's cube after death using weighted selections.",
+  "dependencies": {
+    "hiimjustin000.more_icons": {
+      "version": ">=v2.1.3",
+      "required": false
+    }
+  },
+  "settings": {
+    "enabled": {
+      "name": "Enable randomizer",
+      "description": "Choose a new cube after each player death.",
+      "type": "bool",
+      "default": true
+    },
+    "avoid-repeat": {
+      "name": "Avoid immediate repeat",
+      "description": "Exclude the previously selected cube when another enabled, positive-weight entry exists.",
+      "type": "bool",
+      "default": true
+    },
+    "cube-list": {
+      "name": "Cube entries",
+      "description": "Configure vanilla and More Icons cube entries, weights, and enabled state.",
+      "type": "custom:wir-button",
+      "action": "editor"
+    },
+    "test": {
+      "name": "Test randomize",
+      "description": "Run the weighted selector immediately. This is useful for testing without dying.",
+      "type": "custom:wir-button",
+      "action": "test"
+    },
+    "reset": {
+      "name": "Reset configuration",
+      "description": "Restore the default example configuration.",
+      "type": "custom:wir-button",
+      "action": "reset"
+    }
+  },
+  "tags": ["gameplay", "customization", "utility"]
+}
