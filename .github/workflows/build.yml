@@ -1,0 +1,38 @@
+name: Build Weighted Icon Randomizer
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Geode CLI
+        run: |
+          curl -L https://github.com/geode-sdk/cli/releases/latest/download/geode-linux-x86_64 -o geode
+          chmod +x geode
+          sudo mv geode /usr/local/bin/geode
+
+      - name: Install Geode SDK 5.10.1
+        run: |
+          geode sdk install 5.10.1
+          geode sdk install-binaries
+
+      - name: Build mod
+        run: |
+          geode build
+
+      - name: Upload Geode mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: Weighted-Icon-Randomizer
+          path: build/*.geode
+          if-no-files-found: error
