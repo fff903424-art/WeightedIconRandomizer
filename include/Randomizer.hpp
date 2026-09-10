@@ -2,6 +2,7 @@
 
 #include <Config.hpp>
 #include <optional>
+#include <vector>
 
 namespace wir {
 
