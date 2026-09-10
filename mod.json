@@ -9,7 +9,7 @@
   "id": "Pan5430.weighted-icon-randomizer",
   "name": "Weighted Icon Randomizer",
   "version": "v2.0.0",
-  "developer": "Eheh",
+  "developer": "Pan5430",
   "description": "Randomizes only the player's cube after death using weighted selections.",
   "dependencies": {
     "hiimjustin000.more_icons": {
