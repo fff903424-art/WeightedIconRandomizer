@@ -42,10 +42,9 @@ std::optional<CubeEntry> chooseEntry(
 
     std::vector<CubeEntry const*> candidates;
 
-    for (auto const& e : entries) {
+    for (auto const& e : entries)
         if (valid(e))
             candidates.push_back(&e);
-    }
 
     if (candidates.empty())
         return std::nullopt;
@@ -107,6 +106,63 @@ bool applyCube(CubeEntry const& entry) {
     if (entry.source == IconSource::Vanilla) {
         if (entry.vanillaID <= 0)
             return false;
+
+        GameManager::get()->setPlayerFrame(entry.vanillaID);
+        return true;
+    }
+
+    if (!moreIconsAvailable()) {
+        log::warn(
+            "Cannot select '{}': More Icons is not installed.",
+            entry.moreIconsName
+        );
+        return false;
+    }
+
+    auto* icon = more_icons::getIcon(
+        entry.moreIconsName,
+        IconType::Cube
+    );
+
+    if (!icon) {
+        log::warn(
+            "More Icons cube '{}' was not found.",
+            entry.moreIconsName
+        );
+        return false;
+    }
+
+    more_icons::setIcon(
+        icon,
+        IconType::Cube
+    );
+
+    return true;
+}
+
+void randomizeCube() {
+    if (!Mod::get()->getSettingValue<bool>("enabled"))
+        return;
+
+    static std::optional<CubeEntry> previous;
+
+    bool avoidRepeat =
+        Mod::get()->getSettingValue<bool>("avoid-repeat");
+
+    auto entries = loadEntries();
+
+    auto selected =
+        chooseEntry(entries, previous, avoidRepeat);
+
+    if (!selected)
+        return;
+
+    if (applyCube(*selected)) {
+        previous = *selected;
+    }
+}
+
+} // namespace wir            return false;
 
         GameManager::get()->setPlayerFrame(entry.vanillaID);
         return true;
