@@ -1,6 +1,6 @@
-#include "../include/UI.hpp"
-#include "../include/Config.hpp"
-#include "../include/Randomizer.hpp"
+#include <UI.hpp>
+#include <Config.hpp>
+#include <Randomizer.hpp>
 
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingV3.hpp>
