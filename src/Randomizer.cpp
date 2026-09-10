@@ -166,7 +166,7 @@ void randomizeCube() {
 
     static std::optional<CubeEntry> previous;
 
-    bool avoidRepeat =
+    const bool avoidRepeat =
         Mod::get()->getSettingValue<bool>("avoid-repeat");
 
     auto entries = loadEntries();
@@ -182,134 +182,6 @@ void randomizeCube() {
 
     if (applyCube(*selected))
         previous = *selected;
-}
-
-} // namespace wir
-        GameManager::get()->setPlayerFrame(entry.vanillaID);
-        return true;
-    }
-
-    if (!moreIconsAvailable()) {
-        log::warn(
-            "Cannot select '{}': More Icons is not installed.",
-            entry.moreIconsName
-        );
-        return false;
-    }
-
-    auto* icon = more_icons::getIcon(
-        entry.moreIconsName,
-        IconType::Cube
-    );
-
-    if (!icon) {
-        log::warn(
-            "More Icons cube '{}' was not found.",
-            entry.moreIconsName
-        );
-        return false;
-    }
-
-    more_icons::setIcon(
-        icon,
-        IconType::Cube
-    );
-
-    return true;
-}
-
-void randomizeCube() {
-    if (!Mod::get()->getSettingValue<bool>("enabled"))
-        return;
-
-    static std::optional<CubeEntry> previous;
-
-    bool avoidRepeat =
-        Mod::get()->getSettingValue<bool>("avoid-repeat");
-
-    auto entries = loadEntries();
-
-    auto selected =
-        chooseEntry(entries, previous, avoidRepeat);
-
-    if (!selected)
-        return;
-
-    if (applyCube(*selected)) {
-        previous = *selected;
-    }
-}
-
-} // namespace wir            return false;
-
-        GameManager::get()->setPlayerFrame(entry.vanillaID);
-        return true;
-    }
-
-    if (!moreIconsAvailable()) {
-        log::warn(
-            "Cannot select '{}': More Icons is not installed.",
-            entry.moreIconsName
-        );
-        return false;
-    }
-
-    auto* icon = more_icons::getIcon(
-        entry.moreIconsName,
-        IconType::Cube
-    );
-
-    if (!icon) {
-        log::warn(
-            "More Icons cube '{}' was not found.",
-            entry.moreIconsName
-        );
-        return false;
-    }
-
-    more_icons::setIcon(
-        icon,
-        IconType::Cube
-    );
-
-    return true;
-}
-
-void randomizeCube() {
-    if (!Mod::get()->getSettingValue<bool>("enabled"))
-        return;
-
-    static std::optional<CubeEntry> previous;
-
-    bool avoidRepeat =
-        Mod::get()->getSettingValue<bool>("avoid-repeat");
-
-    auto entries = loadEntries();
-
-    auto selected =
-        chooseEntry(entries, previous, avoidRepeat);
-
-    if (!selected)
-        return;
-
-    if (applyCube(*selected)) {
-        previous = *selected;
-    }
-}
-
-} // namespace wirvoid randomizeCube() {
-    if (!Mod::get()->getSettingValue<bool>("enabled")) return;
-
-    static std::optional<CubeEntry> previous;
-    bool avoidRepeat = Mod::get()->getSettingValue<bool>("avoid-repeat");
-
-    auto entries = loadEntries();
-    auto selected = chooseEntry(entries, previous, avoidRepeat);
-    if (!selected) return;
-
-    if (applyCube(*selected)) {
-        previous = *selected;
-    }
 }
 
 } // namespace wir
