@@ -8,20 +8,15 @@ using namespace geode::prelude;
 
 class $modify(WIRPlayLayer, PlayLayer) {
     void destroyPlayer(PlayerObject* player, GameObject* object) {
-        PlayLayer::destroyPlayer(player, object);
-
-        if (!player)
-            return;
-
-        if (wir::isCubeMode(player)) {
+        if (player && wir::isCubeMode(player)) {
+            log::info("Weighted Icon Randomizer: player died in cube mode.");
             wir::randomizeCube();
         }
+
+        PlayLayer::destroyPlayer(player, object);
     }
 };
 
 $on_mod(Loaded) {
-    log::info("Weighted Icon Randomizer loaded.");
-
-    // The editor is intentionally exposed through the mod's
-    // settings/menu UI rather than putting configuration logic here.
+    log::info("Weighted Icon Randomizer loaded successfully.");
 }
