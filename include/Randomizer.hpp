@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Config.hpp"
+
 #include <optional>
 #include <vector>
+
+class PlayerObject;
 
 namespace wir {
 
@@ -12,8 +15,15 @@ std::optional<CubeEntry> chooseEntry(
     bool avoidRepeat
 );
 
-bool isCubeMode(class PlayerObject* player);
-bool applyCube(CubeEntry const& entry);
-void randomizeCube();
+bool isCubeMode(PlayerObject* player);
+
+bool applyCube(
+    CubeEntry const& entry,
+    PlayerObject* player = nullptr
+);
+
+void randomizeCube(
+    PlayerObject* player = nullptr
+);
 
 } // namespace wir
